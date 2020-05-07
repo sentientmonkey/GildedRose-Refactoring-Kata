@@ -3,27 +3,30 @@ package com.gildedrose
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
         items = items.map { oldItem ->
-            val item = BasicItem(oldItem.name, oldItem.sellIn, oldItem.quality)
+            val item = when {
+                isLegendary(oldItem) -> LegendaryItem(oldItem)
+                isAgedBrie(oldItem) -> AgedBrie(oldItem)
+                isBackstagePass(oldItem) -> BackStagePass(oldItem)
+                else -> BasicItem(oldItem)
+            }
 
             if (!isAgedBrie(item) && !isBackstagePass(item)) {
                 if (aboveMinimumQuality(item)) {
-                    if (!isLegendary(item)) {
-                        item.decreaseQuality()
-                    }
+                    item.decreaseQuality()
                 }
             } else {
-                if (aboveMaximumQuality(item)) {
+                if (belowMaximumQuality(item)) {
                     item.increaseQuality()
 
                     if (isBackstagePass(item)) {
                         if (expiresIn(item, 11)) {
-                            if (aboveMaximumQuality(item)) {
+                            if (belowMaximumQuality(item)) {
                                 item.increaseQuality()
                             }
                         }
 
                         if (expiresIn(item, 6)) {
-                            if (aboveMaximumQuality(item)) {
+                            if (belowMaximumQuality(item)) {
                                 item.increaseQuality()
                             }
                         }
@@ -31,23 +34,19 @@ class GildedRose(var items: Array<Item>) {
                 }
             }
 
-            if (!isLegendary(item)) {
-                item.age()
-            }
+            item.age()
 
             if (isExpired(item)) {
                 if (!isAgedBrie(item)) {
                     if (!isBackstagePass(item)) {
                         if (aboveMinimumQuality(item)) {
-                            if (!isLegendary(item)) {
-                                item.decreaseQuality()
-                            }
+                            item.decreaseQuality()
                         }
                     } else {
                         halfQuality(item)
                     }
                 } else {
-                    if (aboveMaximumQuality(item)) {
+                    if (belowMaximumQuality(item)) {
                         item.increaseQuality()
                     }
                 }
@@ -57,19 +56,28 @@ class GildedRose(var items: Array<Item>) {
         }.toTypedArray()
     }
 
-    class BasicItem(name: String, sellIn: Int, quality: Int) : Item(name, sellIn, quality) {
-        fun increaseQuality() {
+    open class BasicItem(item: Item) : Item(item.name, item.sellIn, item.quality) {
+        open fun increaseQuality() {
             quality += 1
         }
 
-        fun decreaseQuality() {
+        open fun decreaseQuality() {
             quality -= 1
         }
 
-        fun age() {
+        open fun age() {
             sellIn -= 1
         }
     }
+
+    class LegendaryItem(item: Item) : BasicItem(item) {
+        override fun increaseQuality() = Unit
+        override fun decreaseQuality() = Unit
+        override fun age() = Unit
+    }
+
+    class BackStagePass(item: Item) : BasicItem(item)
+    class AgedBrie(item: Item) : BasicItem(item)
 
     private fun isBackstagePass(item: Item) = item.name == "Backstage passes to a TAFKAL80ETC concert"
     private fun isAgedBrie(item: Item) = item.name == "Aged Brie"
@@ -81,7 +89,7 @@ class GildedRose(var items: Array<Item>) {
 
     private fun aboveMinimumQuality(item: Item) = item.quality > 0
     private fun isExpired(item: Item) = item.sellIn < 0
-    private fun aboveMaximumQuality(item: Item) = item.quality < 50
+    private fun belowMaximumQuality(item: Item) = item.quality < 50
     private fun expiresIn(item: Item, days: Int) = item.sellIn < days
 }
 
