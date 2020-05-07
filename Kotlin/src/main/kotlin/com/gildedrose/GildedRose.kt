@@ -2,27 +2,29 @@ package com.gildedrose
 
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
-        items.forEach { item ->
+        items = items.map { oldItem ->
+            val item = BasicItem(oldItem.name, oldItem.sellIn, oldItem.quality)
+
             if (!isAgedBrie(item) && !isBackstagePass(item)) {
                 if (aboveMinimumQuality(item)) {
                     if (!isLegendary(item)) {
-                        decreaseQuality(item)
+                        item.decreaseQuality()
                     }
                 }
             } else {
                 if (aboveMaximumQuality(item)) {
-                    increaseQuality(item)
+                    item.increaseQuality()
 
                     if (isBackstagePass(item)) {
                         if (expiresIn(item, 11)) {
                             if (aboveMaximumQuality(item)) {
-                                increaseQuality(item)
+                                item.increaseQuality()
                             }
                         }
 
                         if (expiresIn(item, 6)) {
                             if (aboveMaximumQuality(item)) {
-                                increaseQuality(item)
+                                item.increaseQuality()
                             }
                         }
                     }
@@ -30,7 +32,7 @@ class GildedRose(var items: Array<Item>) {
             }
 
             if (!isLegendary(item)) {
-                age(item)
+                item.age()
             }
 
             if (isExpired(item)) {
@@ -38,7 +40,7 @@ class GildedRose(var items: Array<Item>) {
                     if (!isBackstagePass(item)) {
                         if (aboveMinimumQuality(item)) {
                             if (!isLegendary(item)) {
-                                decreaseQuality(item)
+                                item.decreaseQuality()
                             }
                         }
                     } else {
@@ -46,30 +48,35 @@ class GildedRose(var items: Array<Item>) {
                     }
                 } else {
                     if (aboveMaximumQuality(item)) {
-                        increaseQuality(item)
+                        item.increaseQuality()
                     }
                 }
             }
+
+            item
+        }.toTypedArray()
+    }
+
+    class BasicItem(name: String, sellIn: Int, quality: Int) : Item(name, sellIn, quality) {
+        fun increaseQuality() {
+            quality += 1
+        }
+
+        fun decreaseQuality() {
+            quality -= 1
+        }
+
+        fun age() {
+            sellIn -= 1
         }
     }
 
     private fun isBackstagePass(item: Item) = item.name == "Backstage passes to a TAFKAL80ETC concert"
     private fun isAgedBrie(item: Item) = item.name == "Aged Brie"
     private fun isLegendary(item: Item) = item.name == "Sulfuras, Hand of Ragnaros"
-    private fun increaseQuality(item: Item) {
-        item.quality = item.quality + 1
-    }
-
-    private fun decreaseQuality(item: Item) {
-        item.quality = item.quality - 1
-    }
 
     private fun halfQuality(item: Item) {
         item.quality = item.quality - item.quality
-    }
-
-    private fun age(item: Item) {
-        item.sellIn = item.sellIn - 1
     }
 
     private fun aboveMinimumQuality(item: Item) = item.quality > 0
