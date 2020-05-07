@@ -1,10 +1,10 @@
 package com.gildedrose
 
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Test
 
 class GildedRoseTest {
-
     private fun buildRose(vararg items: Item): GildedRose {
         @Suppress("UNCHECKED_CAST")
         return GildedRose(items as Array<Item>)
@@ -73,6 +73,7 @@ class GildedRoseTest {
         assertDifference(0, { rose.items[0].quality }, { rose.updateQuality() })
     }
 
+
     @Test
     fun `Backstage passes increase in quality`() {
         val rose = buildRose(Item("Backstage passes to a TAFKAL80ETC concert", 11, 10))
@@ -100,6 +101,14 @@ class GildedRoseTest {
 
         rose.updateQuality()
         assertEquals(0, rose.items[0].quality)
+    }
+
+    @Test
+    @Ignore // TODO: add functionality
+    fun `Conjured items degrade in quality twice as fast`() {
+        val rose = buildRose(Item("Conjured Mana Cake", 5, 10))
+
+        assertDifference(-2, { rose.items[0].quality }, { rose.updateQuality() })
     }
 }
 
