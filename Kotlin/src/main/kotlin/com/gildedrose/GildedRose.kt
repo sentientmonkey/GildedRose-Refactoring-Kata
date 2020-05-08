@@ -10,11 +10,10 @@ class GildedRose(var items: Array<Item>) {
                 else -> BasicItem(oldItem)
             }
 
-            if (!isAgedBrie(item) && !isBackstagePass(item)) {
+            if (!isBackstagePass(item)) {
                 item.decreaseQuality()
             } else {
                 item.increaseQuality()
-
                 if (isBackstagePass(item)) {
                     if (expiresIn(item, 11)) {
                         item.increaseQuality()
@@ -29,14 +28,10 @@ class GildedRose(var items: Array<Item>) {
             item.age()
 
             if (item.isExpired()) {
-                if (!isAgedBrie(item)) {
-                    if (!isBackstagePass(item)) {
-                        item.decreaseQuality()
-                    } else {
-                        halfQuality(item)
-                    }
+                if (!isBackstagePass(item)) {
+                    item.decreaseQuality()
                 } else {
-                    item.increaseQuality()
+                    halfQuality(item)
                 }
             }
 
@@ -73,8 +68,18 @@ class GildedRose(var items: Array<Item>) {
         override fun age() = Unit
     }
 
+
+    class AgedBrie(item: Item) : BasicItem(item) {
+        override fun increaseQuality() {
+            super.decreaseQuality()
+        }
+
+        override fun decreaseQuality() {
+            super.increaseQuality()
+        }
+    }
+
     class BackStagePass(item: Item) : BasicItem(item)
-    class AgedBrie(item: Item) : BasicItem(item)
 
     private fun isBackstagePass(item: Item) = item.name == "Backstage passes to a TAFKAL80ETC concert"
     private fun isAgedBrie(item: Item) = item.name == "Aged Brie"
