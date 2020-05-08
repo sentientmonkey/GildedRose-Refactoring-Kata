@@ -29,17 +29,14 @@ class GildedRose(var items: Array<Item>) {
             item.name = name
         }
 
-        private fun belowMaximumQuality() = quality < 50
-        private fun aboveMinimumQuality() = quality > 0
-
         fun increaseQuality() {
-            if (belowMaximumQuality()) {
+            if (quality < 50) {
                 quality += 1
             }
         }
 
         fun decreaseQuality() {
-            if (aboveMinimumQuality()) {
+            if (quality > 0) {
                 quality -= 1
             }
         }
@@ -50,7 +47,9 @@ class GildedRose(var items: Array<Item>) {
             sellIn -= 1
         }
 
-        open fun isExpired() = sellIn < 0
+        fun expiresIn(days: Int) = sellIn <= days
+
+        open fun isExpired() = expiresIn(0)
     }
 
     class LegendaryItem(item: Item) : BasicItem(item) {
@@ -65,8 +64,6 @@ class GildedRose(var items: Array<Item>) {
     }
 
     class BackStagePass(item: Item) : BasicItem(item) {
-        private fun expiresIn(days: Int) = sellIn <= days
-
         override fun updateQuality() {
             if (isExpired()) {
                 quality = 0
