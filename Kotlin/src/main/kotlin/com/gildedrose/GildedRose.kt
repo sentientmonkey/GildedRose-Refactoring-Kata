@@ -10,29 +10,12 @@ class GildedRose(var items: Array<Item>) {
                 else -> BasicItem(oldItem)
             }
 
-            if (!isBackstagePass(item)) {
-                item.decreaseQuality()
-            } else {
-                item.increaseQuality()
-                if (isBackstagePass(item)) {
-                    if (expiresIn(item, 11)) {
-                        item.increaseQuality()
-                    }
-
-                    if (expiresIn(item, 6)) {
-                        item.increaseQuality()
-                    }
-                }
-            }
+            item.decreaseQuality()
 
             item.age()
 
             if (item.isExpired()) {
-                if (!isBackstagePass(item)) {
-                    item.decreaseQuality()
-                } else {
-                    halfQuality(item)
-                }
+                item.decreaseQuality()
             }
 
             item
@@ -79,16 +62,28 @@ class GildedRose(var items: Array<Item>) {
         }
     }
 
-    class BackStagePass(item: Item) : BasicItem(item)
+    class BackStagePass(item: Item) : BasicItem(item) {
+        private fun expiresIn(days: Int) = sellIn <= days
+
+        override fun decreaseQuality() {
+            if (expiresIn(0)) {
+                quality = 0
+                return
+            }
+
+            super.increaseQuality()
+            if (expiresIn(10)) {
+                super.increaseQuality()
+            }
+
+            if (expiresIn(5)) {
+                super.increaseQuality()
+            }
+        }
+    }
 
     private fun isBackstagePass(item: Item) = item.name == "Backstage passes to a TAFKAL80ETC concert"
     private fun isAgedBrie(item: Item) = item.name == "Aged Brie"
     private fun isLegendary(item: Item) = item.name == "Sulfuras, Hand of Ragnaros"
-
-    private fun halfQuality(item: Item) {
-        item.quality = item.quality - item.quality
-    }
-
-    private fun expiresIn(item: Item, days: Int) = item.sellIn < days
 }
 
