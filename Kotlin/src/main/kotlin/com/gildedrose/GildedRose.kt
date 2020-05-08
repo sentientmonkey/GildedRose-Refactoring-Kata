@@ -11,44 +11,32 @@ class GildedRose(var items: Array<Item>) {
             }
 
             if (!isAgedBrie(item) && !isBackstagePass(item)) {
-                if (aboveMinimumQuality(item)) {
-                    item.decreaseQuality()
-                }
+                item.decreaseQuality()
             } else {
-                if (belowMaximumQuality(item)) {
-                    item.increaseQuality()
+                item.increaseQuality()
 
-                    if (isBackstagePass(item)) {
-                        if (expiresIn(item, 11)) {
-                            if (belowMaximumQuality(item)) {
-                                item.increaseQuality()
-                            }
-                        }
+                if (isBackstagePass(item)) {
+                    if (expiresIn(item, 11)) {
+                        item.increaseQuality()
+                    }
 
-                        if (expiresIn(item, 6)) {
-                            if (belowMaximumQuality(item)) {
-                                item.increaseQuality()
-                            }
-                        }
+                    if (expiresIn(item, 6)) {
+                        item.increaseQuality()
                     }
                 }
             }
 
             item.age()
 
-            if (isExpired(item)) {
+            if (item.isExpired()) {
                 if (!isAgedBrie(item)) {
                     if (!isBackstagePass(item)) {
-                        if (aboveMinimumQuality(item)) {
-                            item.decreaseQuality()
-                        }
+                        item.decreaseQuality()
                     } else {
                         halfQuality(item)
                     }
                 } else {
-                    if (belowMaximumQuality(item)) {
-                        item.increaseQuality()
-                    }
+                    item.increaseQuality()
                 }
             }
 
@@ -57,17 +45,26 @@ class GildedRose(var items: Array<Item>) {
     }
 
     open class BasicItem(item: Item) : Item(item.name, item.sellIn, item.quality) {
+        private fun belowMaximumQuality() = quality < 50
+        private fun aboveMinimumQuality() = quality > 0
+
         open fun increaseQuality() {
-            quality += 1
+            if (belowMaximumQuality()) {
+                quality += 1
+            }
         }
 
         open fun decreaseQuality() {
-            quality -= 1
+            if (aboveMinimumQuality()) {
+                quality -= 1
+            }
         }
 
         open fun age() {
             sellIn -= 1
         }
+
+        open fun isExpired() = sellIn < 0
     }
 
     class LegendaryItem(item: Item) : BasicItem(item) {
@@ -87,9 +84,6 @@ class GildedRose(var items: Array<Item>) {
         item.quality = item.quality - item.quality
     }
 
-    private fun aboveMinimumQuality(item: Item) = item.quality > 0
-    private fun isExpired(item: Item) = item.sellIn < 0
-    private fun belowMaximumQuality(item: Item) = item.quality < 50
     private fun expiresIn(item: Item, days: Int) = item.sellIn < days
 }
 
