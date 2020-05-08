@@ -2,11 +2,12 @@ package com.gildedrose
 
 class GildedRose(var items: Array<Item>) {
     fun updateQuality() {
-        items = items.map { oldItem ->
+        items.forEach { oldItem ->
             val item = when {
                 oldItem.name == "Sulfuras, Hand of Ragnaros" -> LegendaryItem(oldItem)
                 oldItem.name == "Aged Brie" -> AgedBrie(oldItem)
                 oldItem.name == "Backstage passes to a TAFKAL80ETC concert" -> BackStagePass(oldItem)
+                oldItem.name.contains("Conjured") -> ConjuredItem(oldItem)
                 else -> BasicItem(oldItem)
             }
 
@@ -17,11 +18,17 @@ class GildedRose(var items: Array<Item>) {
                 item.updateQuality()
             }
 
-            item
-        }.toTypedArray()
+            item.copyInto(oldItem)
+        }
     }
 
     open class BasicItem(item: Item) : Item(item.name, item.sellIn, item.quality) {
+        fun copyInto(item: Item) {
+            item.sellIn = sellIn
+            item.quality = quality
+            item.name = name
+        }
+
         private fun belowMaximumQuality() = quality < 50
         private fun aboveMinimumQuality() = quality > 0
 
@@ -31,11 +38,13 @@ class GildedRose(var items: Array<Item>) {
             }
         }
 
-        open fun updateQuality() {
+        fun decreaseQuality() {
             if (aboveMinimumQuality()) {
                 quality -= 1
             }
         }
+
+        open fun updateQuality() = decreaseQuality()
 
         open fun age() {
             sellIn -= 1
@@ -72,6 +81,13 @@ class GildedRose(var items: Array<Item>) {
             if (expiresIn(5)) {
                 super.increaseQuality()
             }
+        }
+    }
+
+    class ConjuredItem(item: Item) : BasicItem(item) {
+        override fun updateQuality() {
+            super.decreaseQuality()
+            super.decreaseQuality()
         }
     }
 }

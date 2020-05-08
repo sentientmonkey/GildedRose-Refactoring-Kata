@@ -1,7 +1,6 @@
 package com.gildedrose
 
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Test
 
 class GildedRoseTest {
@@ -104,7 +103,6 @@ class GildedRoseTest {
     }
 
     @Test
-    @Ignore // TODO: add functionality
     fun `Conjured items degrade in quality twice as fast`() {
         val rose = buildRose(Item("Conjured Mana Cake", 5, 10))
 
