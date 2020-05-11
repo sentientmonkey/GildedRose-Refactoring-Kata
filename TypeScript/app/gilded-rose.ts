@@ -10,6 +10,22 @@ export class Item {
   }
 }
 
+class ItemFactory {
+  static build(item: Item): BasicItem {
+    if (item.name === "Sulfuras, Hand of Ragnaros") {
+      return new LegendaryItem(item);
+    } else if (item.name === "Aged Brie") {
+      return new AgedBrie(item);
+    } else if (item.name === "Backstage passes to a TAFKAL80ETC concert") {
+      return new BackstagePass(item);
+    } else if (item.name.indexOf("Conjured") !== -1) {
+      return new ConjuredItem(item);
+    } else {
+      return new BasicItem(item);
+    }
+  }
+}
+
 class BasicItem extends Item {
   constructor(item: Item) {
     super(item.name, item.sellIn, item.quality);
@@ -23,6 +39,14 @@ class BasicItem extends Item {
 
   age(): void {
     this.sellIn--;
+  }
+
+  expiresIn(days: number): boolean {
+    return this.sellIn <= days;
+  }
+
+  isExpired(): boolean {
+    return this.sellIn < 0;
   }
 
   updateQuality(): void {
@@ -49,34 +73,29 @@ class LegendaryItem extends BasicItem {
 
 class AgedBrie extends BasicItem {
   updateQuality(): void {
-    super.increaseQuality();
+    this.increaseQuality();
   }
 }
 
 class BackstagePass extends BasicItem {
   updateQuality(): void {
-    super.increaseQuality();
-    if (this.sellIn < 11) {
-      super.increaseQuality();
+    this.increaseQuality();
+    if (this.expiresIn(10)) {
+      this.increaseQuality();
     }
-    if (this.sellIn < 6) {
-      super.increaseQuality();
+    if (this.expiresIn(5)) {
+      this.increaseQuality();
     }
-    if (this.sellIn < 0) {
+    if (this.isExpired()) {
       this.quality = 0;
     }
   }
 }
 
-function toItem(item: Item): BasicItem {
-  if (item.name === "Sulfuras, Hand of Ragnaros") {
-    return new LegendaryItem(item);
-  } else if (item.name === "Aged Brie") {
-    return new AgedBrie(item);
-  } else if (item.name === "Backstage passes to a TAFKAL80ETC concert") {
-    return new BackstagePass(item);
-  } else {
-    return new BasicItem(item);
+class ConjuredItem extends BasicItem {
+  updateQuality(): void {
+    this.decreaseQuality();
+    this.decreaseQuality();
   }
 }
 
@@ -89,11 +108,11 @@ export class GildedRose {
 
   updateQuality() {
     this.items.forEach((oldItem: Item) => {
-      const item = toItem(oldItem);
+      const item = ItemFactory.build(oldItem);
       item.updateQuality();
       item.age();
 
-      if (item.sellIn < 0) {
+      if (item.isExpired()) {
         item.updateQuality();
       }
 

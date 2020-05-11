@@ -137,7 +137,7 @@ describe("The Gilded Rose", () => {
     });
   });
 
-  xdescribe("Conjured items", () => {
+  describe("Conjured items", () => {
     it("should degrade twice as fast", () => {
       const rose = buildRose(new Item("Conjured Mana Cake", 3, 6));
       expectDiff(
