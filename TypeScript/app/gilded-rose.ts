@@ -50,6 +50,21 @@ class BasicItem extends Item {
   }
 }
 
+class LegendaryItem extends BasicItem {
+  age(): void {}
+  increaseQuality(): void {}
+  decreaseQuality(): void {}
+}
+
+function toItem(item: Item): BasicItem {
+  const basicItem = new BasicItem(item);
+  if (basicItem.isLegendaryItem()) {
+    return new LegendaryItem(item);
+  } else {
+    return basicItem;
+  }
+}
+
 export class GildedRose {
   items: Array<Item>;
 
@@ -59,12 +74,10 @@ export class GildedRose {
 
   updateQuality() {
     this.items.forEach((oldItem: Item) => {
-      const item = new BasicItem(oldItem);
+      const item = toItem(oldItem);
 
       if (!item.isAgedBrie() && !item.isBackstagePass()) {
-        if (!item.isLegendaryItem()) {
-          item.decreaseQuality();
-        }
+        item.decreaseQuality();
       } else {
         item.increaseQuality();
         if (item.isBackstagePass()) {
@@ -77,16 +90,12 @@ export class GildedRose {
         }
       }
 
-      if (!item.isLegendaryItem()) {
-        item.age();
-      }
+      item.age();
 
       if (item.sellIn < 0) {
         if (!item.isAgedBrie()) {
           if (!item.isBackstagePass()) {
-            if (!item.isLegendaryItem()) {
-              item.decreaseQuality();
-            }
+            item.decreaseQuality();
           } else {
             item.quality = 0;
           }
