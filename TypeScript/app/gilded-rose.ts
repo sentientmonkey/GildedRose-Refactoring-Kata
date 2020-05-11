@@ -20,6 +20,18 @@ class BasicItem extends Item {
     item.sellIn = this.sellIn;
     item.quality = this.quality;
   }
+
+  isAgedBrie(): boolean {
+    return this.name === "Aged Brie";
+  }
+
+  isLegendaryItem(): boolean {
+    return this.name === "Sulfuras, Hand of Ragnaros";
+  }
+
+  isBackstagePass(): boolean {
+    return this.name === "Backstage passes to a TAFKAL80ETC concert";
+  }
 }
 
 export class GildedRose {
@@ -32,19 +44,17 @@ export class GildedRose {
   updateQuality() {
     this.items.forEach((oldItem: Item) => {
       const item = new BasicItem(oldItem);
-      if (
-        item.name != "Aged Brie" &&
-        item.name != "Backstage passes to a TAFKAL80ETC concert"
-      ) {
+
+      if (!item.isAgedBrie() && !item.isBackstagePass()) {
         if (item.quality > 0) {
-          if (item.name != "Sulfuras, Hand of Ragnaros") {
+          if (!item.isLegendaryItem()) {
             item.quality = item.quality - 1;
           }
         }
       } else {
         if (item.quality < 50) {
           item.quality = item.quality + 1;
-          if (item.name == "Backstage passes to a TAFKAL80ETC concert") {
+          if (item.isBackstagePass()) {
             if (item.sellIn < 11) {
               if (item.quality < 50) {
                 item.quality = item.quality + 1;
@@ -58,14 +68,14 @@ export class GildedRose {
           }
         }
       }
-      if (item.name != "Sulfuras, Hand of Ragnaros") {
+      if (!item.isLegendaryItem()) {
         item.sellIn = item.sellIn - 1;
       }
       if (item.sellIn < 0) {
-        if (item.name != "Aged Brie") {
-          if (item.name != "Backstage passes to a TAFKAL80ETC concert") {
+        if (!item.isAgedBrie()) {
+          if (!item.isBackstagePass()) {
             if (item.quality > 0) {
-              if (item.name != "Sulfuras, Hand of Ragnaros") {
+              if (!item.isLegendaryItem()) {
                 item.quality = item.quality - 1;
               }
             }
