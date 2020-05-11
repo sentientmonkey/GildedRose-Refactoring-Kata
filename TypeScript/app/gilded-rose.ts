@@ -32,6 +32,18 @@ class BasicItem extends Item {
   isBackstagePass(): boolean {
     return this.name === "Backstage passes to a TAFKAL80ETC concert";
   }
+
+  age(): void {
+    this.sellIn--;
+  }
+
+  increaseQuality(): void {
+    this.quality++;
+  }
+
+  decreaseQuality(): void {
+    this.quality--;
+  }
 }
 
 export class GildedRose {
@@ -48,43 +60,45 @@ export class GildedRose {
       if (!item.isAgedBrie() && !item.isBackstagePass()) {
         if (item.quality > 0) {
           if (!item.isLegendaryItem()) {
-            item.quality = item.quality - 1;
+            item.decreaseQuality();
           }
         }
       } else {
         if (item.quality < 50) {
-          item.quality = item.quality + 1;
+          item.increaseQuality();
           if (item.isBackstagePass()) {
             if (item.sellIn < 11) {
               if (item.quality < 50) {
-                item.quality = item.quality + 1;
+                item.increaseQuality();
               }
             }
             if (item.sellIn < 6) {
               if (item.quality < 50) {
-                item.quality = item.quality + 1;
+                item.increaseQuality();
               }
             }
           }
         }
       }
+
       if (!item.isLegendaryItem()) {
-        item.sellIn = item.sellIn - 1;
+        item.age();
       }
+
       if (item.sellIn < 0) {
         if (!item.isAgedBrie()) {
           if (!item.isBackstagePass()) {
             if (item.quality > 0) {
               if (!item.isLegendaryItem()) {
-                item.quality = item.quality - 1;
+                item.decreaseQuality();
               }
             }
           } else {
-            item.quality = item.quality - item.quality;
+            item.quality = 0;
           }
         } else {
           if (item.quality < 50) {
-            item.quality = item.quality + 1;
+            item.increaseQuality();
           }
         }
       }
