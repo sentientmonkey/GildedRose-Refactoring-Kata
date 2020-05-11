@@ -10,6 +10,18 @@ export class Item {
   }
 }
 
+class BasicItem extends Item {
+  constructor(item: Item) {
+    super(item.name, item.sellIn, item.quality);
+  }
+
+  copyInto(item: Item) {
+    item.name = this.name;
+    item.sellIn = this.sellIn;
+    item.quality = this.quality;
+  }
+}
+
 export class GildedRose {
   items: Array<Item>;
 
@@ -18,7 +30,8 @@ export class GildedRose {
   }
 
   updateQuality() {
-    this.items.forEach((item: Item) => {
+    this.items.forEach((oldItem: Item) => {
+      const item = new BasicItem(oldItem);
       if (
         item.name != "Aged Brie" &&
         item.name != "Backstage passes to a TAFKAL80ETC concert"
@@ -65,6 +78,8 @@ export class GildedRose {
           }
         }
       }
+
+      item.copyInto(oldItem);
     });
 
     return this.items;

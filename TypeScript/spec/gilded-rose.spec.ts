@@ -6,15 +6,14 @@ describe("The Gilded Rose", () => {
     return new GildedRose(items);
   }
 
-  function expectDiff(
-    difference: number,
-    valueFn: () => number,
-    actionFn: () => void
-  ): void {
-    const before: number = valueFn();
-    actionFn();
-    const after: number = valueFn();
-    expect(after - before).toEqual(difference);
+  type ValueFn = () => number;
+  type ActionFn = () => void;
+
+  function expectDiff(diff: number, value: ValueFn, action: ActionFn): void {
+    const before: number = value();
+    action();
+    const after: number = value();
+    expect(after - before).toEqual(diff);
   }
 
   describe("Basic Items", () => {
