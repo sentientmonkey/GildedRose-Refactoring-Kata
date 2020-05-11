@@ -21,18 +21,6 @@ class BasicItem extends Item {
     item.quality = this.quality;
   }
 
-  isAgedBrie(): boolean {
-    return this.name === "Aged Brie";
-  }
-
-  isLegendaryItem(): boolean {
-    return this.name === "Sulfuras, Hand of Ragnaros";
-  }
-
-  isBackstagePass(): boolean {
-    return this.name === "Backstage passes to a TAFKAL80ETC concert";
-  }
-
   age(): void {
     this.sellIn--;
   }
@@ -81,15 +69,14 @@ class BackstagePass extends BasicItem {
 }
 
 function toItem(item: Item): BasicItem {
-  const basicItem = new BasicItem(item);
-  if (basicItem.isLegendaryItem()) {
+  if (item.name === "Sulfuras, Hand of Ragnaros") {
     return new LegendaryItem(item);
-  } else if (basicItem.isAgedBrie()) {
+  } else if (item.name === "Aged Brie") {
     return new AgedBrie(item);
-  } else if (basicItem.isBackstagePass()) {
+  } else if (item.name === "Backstage passes to a TAFKAL80ETC concert") {
     return new BackstagePass(item);
   } else {
-    return basicItem;
+    return new BasicItem(item);
   }
 }
 
