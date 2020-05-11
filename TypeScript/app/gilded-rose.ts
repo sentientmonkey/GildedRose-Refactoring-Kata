@@ -38,11 +38,15 @@ class BasicItem extends Item {
   }
 
   increaseQuality(): void {
-    this.quality++;
+    if (this.quality < 50) {
+      this.quality++;
+    }
   }
 
   decreaseQuality(): void {
-    this.quality--;
+    if (this.quality > 0) {
+      this.quality--;
+    }
   }
 }
 
@@ -58,25 +62,17 @@ export class GildedRose {
       const item = new BasicItem(oldItem);
 
       if (!item.isAgedBrie() && !item.isBackstagePass()) {
-        if (item.quality > 0) {
-          if (!item.isLegendaryItem()) {
-            item.decreaseQuality();
-          }
+        if (!item.isLegendaryItem()) {
+          item.decreaseQuality();
         }
       } else {
-        if (item.quality < 50) {
-          item.increaseQuality();
-          if (item.isBackstagePass()) {
-            if (item.sellIn < 11) {
-              if (item.quality < 50) {
-                item.increaseQuality();
-              }
-            }
-            if (item.sellIn < 6) {
-              if (item.quality < 50) {
-                item.increaseQuality();
-              }
-            }
+        item.increaseQuality();
+        if (item.isBackstagePass()) {
+          if (item.sellIn < 11) {
+            item.increaseQuality();
+          }
+          if (item.sellIn < 6) {
+            item.increaseQuality();
           }
         }
       }
@@ -88,18 +84,14 @@ export class GildedRose {
       if (item.sellIn < 0) {
         if (!item.isAgedBrie()) {
           if (!item.isBackstagePass()) {
-            if (item.quality > 0) {
-              if (!item.isLegendaryItem()) {
-                item.decreaseQuality();
-              }
+            if (!item.isLegendaryItem()) {
+              item.decreaseQuality();
             }
           } else {
             item.quality = 0;
           }
         } else {
-          if (item.quality < 50) {
-            item.increaseQuality();
-          }
+          item.increaseQuality();
         }
       }
 
