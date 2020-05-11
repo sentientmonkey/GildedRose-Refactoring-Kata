@@ -37,6 +37,10 @@ class BasicItem extends Item {
     this.sellIn--;
   }
 
+  updateQuality(): void {
+    this.decreaseQuality();
+  }
+
   increaseQuality(): void {
     if (this.quality < 50) {
       this.quality++;
@@ -52,24 +56,17 @@ class BasicItem extends Item {
 
 class LegendaryItem extends BasicItem {
   age(): void {}
-  increaseQuality(): void {}
-  decreaseQuality(): void {}
+  updateQuality(): void {}
 }
 
 class AgedBrie extends BasicItem {
-  increaseQuality(): void {
-    super.decreaseQuality();
-  }
-  decreaseQuality(): void {
+  updateQuality(): void {
     super.increaseQuality();
   }
 }
 
 class BackstagePass extends BasicItem {
-  increaseQuality(): void {
-    super.decreaseQuality();
-  }
-  decreaseQuality(): void {
+  updateQuality(): void {
     super.increaseQuality();
     if (this.sellIn < 11) {
       super.increaseQuality();
@@ -106,11 +103,11 @@ export class GildedRose {
   updateQuality() {
     this.items.forEach((oldItem: Item) => {
       const item = toItem(oldItem);
-      item.decreaseQuality();
+      item.updateQuality();
       item.age();
 
       if (item.sellIn < 0) {
-        item.decreaseQuality();
+        item.updateQuality();
       }
 
       item.copyInto(oldItem);
